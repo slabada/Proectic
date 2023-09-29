@@ -81,7 +81,7 @@ public class TaxRateService {
 
     public Set<TaxRateModel> Check(PayRollCardModel prc){
         Set<TaxRateModel> result = new HashSet<>();
-        if(prc.getTaxRate() != null){
+        if(prc.getTaxRate() != null && prc.getTaxRate().size() > 0){
             for(TaxRateModel r : prc.getTaxRate()){
                 Optional<TaxRateModel> rDb = taxRateRepository.findById(r.getId());
                 rDb.ifPresent(result::add);

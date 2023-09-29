@@ -1,14 +1,13 @@
-package com.gateway.gateway;
+package com.gateway.gatewaymicroservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
-public class GatewayApplication {
+public class GatewayMicroserviceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GatewayApplication.class, args);
+        SpringApplication.run(GatewayMicroserviceApplication.class, args);
     }
 
 }

@@ -1,16 +1,18 @@
 package com.financemicroservice.Services;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.financemicroservice.DTO.DTOModels.EmployeeDTO;
+import com.financemicroservice.DTO.DTOModels.PositionDTO;
+import com.financemicroservice.DTO.ServiceClient.EmployeeServiceClient;
 import com.financemicroservice.Handler.CustomExceptions;
 import com.financemicroservice.Models.PayRollCardModel;
 import com.financemicroservice.Models.TaxBenefitModel;
 import com.financemicroservice.Models.TaxRateModel;
 import com.financemicroservice.Repositorys.PayRollCardRepository;
 import com.financemicroservice.Util.TaxCalculation;
-import com.financemicroservice.Util.WebClientUtil;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -25,31 +27,28 @@ public class PayRollCardService {
 
     protected final TaxRateService taxRateService;
 
-    protected final WebClientUtil webClientUtil;
-
     protected final KafkaService kafkaService;
 
     protected final TaxCalculation taxCalculation;
 
+    protected final EmployeeServiceClient employeeServiceClient;
+
     public PayRollCardService(PayRollCardRepository payRollCardRepository,
                               TaxBenefitService taxBenefitService,
                               TaxRateService taxRateService,
-                              WebClientUtil webClientUtil,
                               KafkaService kafkaService,
-                              TaxCalculation taxCalculation) {
+                              TaxCalculation taxCalculation,
+                              EmployeeServiceClient employeeServiceClient) {
 
         this.payRollCardRepository = payRollCardRepository;
         this.taxBenefitService = taxBenefitService;
         this.taxRateService = taxRateService;
-        this.webClientUtil = webClientUtil;
         this.kafkaService = kafkaService;
         this.taxCalculation = taxCalculation;
+        this.employeeServiceClient = employeeServiceClient;
     }
 
     public Optional<PayRollCardModel> Create(PayRollCardModel prc) {
-
-        JsonNode gE = webClientUtil.GetEmployeeWebClient(
-                "/employee/" + prc.getEmployeeId());
 
         if(prc.getSalary().compareTo(BigDecimal.ZERO) == 0)
             throw new CustomExceptions.NegativeSalaryException();
@@ -80,11 +79,13 @@ public class PayRollCardService {
             );
         }
 
-        prc.setTotalAmount(totalAmount);
+        prc.setTotalAmount(totalAmount.setScale(2, RoundingMode.HALF_DOWN));
 
         payRollCardRepository.save(prc);
 
-        kafkaService.SendBufferKafka(gE, prc.getPayday(), prc.getTotalAmount());
+        EmployeeDTO eDTO = employeeServiceClient.getPositionById(prc.getEmployeeId());
+
+        kafkaService.SendBufferKafka(eDTO, prc.getPayday(), prc.getTotalAmount());
 
         return Optional.of(prc);
     }
