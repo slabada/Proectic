@@ -15,6 +15,7 @@ public class UserService implements ReactiveUserDetailsService {
         this.userRepository = userRepository;
     }
 
+    // Реализация метода findByUsername интерфейса ReactiveUserDetailsService
     @Override
     public Mono<UserDetails> findByUsername(String username) {
         return userRepository.findByLogin(username)

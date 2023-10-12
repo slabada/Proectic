@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
+// Поля, которые запрашиваются у микросервиса Finance-microservice
+
 @Getter
 public class PayRollCardDTO {
     private long id;

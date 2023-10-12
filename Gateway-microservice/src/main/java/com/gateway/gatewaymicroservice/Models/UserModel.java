@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+// Модель бухгалтера который может получать доступ
+
 @Getter
 @Setter
 public class UserModel implements UserDetails {
@@ -20,6 +22,7 @@ public class UserModel implements UserDetails {
     private String password;
     private boolean active;
 
+    // Реализация методов интерфейса UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;

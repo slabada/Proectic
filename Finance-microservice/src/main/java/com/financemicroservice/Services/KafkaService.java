@@ -19,26 +19,19 @@ public class KafkaService {
         this.template = template;
     }
 
+    // Метод для отправки сообщения в Kafka с данными о сотруднике и другой информации.
     @SneakyThrows
     public void SendBufferKafka(EmployeeDTO employee, LocalDate data, BigDecimal totalAmount){
 
+        // Создание JSON-объекта с данными о сотруднике и другой информации.
         ObjectNode json = JsonNodeFactory.instance.objectNode()
                 .put("email", employee.getEmail())
                 .put("firstName", employee.getFirstName())
                 .put("data", data.toString())
                 .put("totalAmount", totalAmount.toString());
 
+        // Отправка JSON-строки в Kafka топик "SendBuffer".
         template.send("SendBuffer", json.toString());
     }
-
-//    public void SendBufferKafka(EmployeeDTO employee, LocalDate data, BigDecimal totalAmount){
-//
-//        ObjectNode json = JsonNodeFactory.instance.objectNode()
-//                .put("email", employee.get("email").asText())
-//                .put("firstName", employee.get("firstName").asText())
-//                .put("data", data.toString())
-//                .put("totalAmount", totalAmount.toString());
-//
-//        template.send("SendBuffer", json.toString());
-//    }
 }
+

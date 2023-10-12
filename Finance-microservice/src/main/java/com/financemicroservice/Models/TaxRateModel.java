@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Реализация абстрактного класса для налога
+
 @Entity
 @NoArgsConstructor
 @Getter

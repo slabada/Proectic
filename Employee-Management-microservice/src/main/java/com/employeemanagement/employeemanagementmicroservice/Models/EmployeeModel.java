@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Модель сотрудника
+
 @Entity
 @Getter
 @Setter

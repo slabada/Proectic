@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+// Этот класс представляет обработчики исключений, которые будут использоваться в микросервисе.
+
 @RestControllerAdvice
 public class ExceptionsHandlers {
     @ExceptionHandler(CustomExceptions.InvalidIdException.class)

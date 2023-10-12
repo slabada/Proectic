@@ -21,17 +21,22 @@ public class ReportController {
         this.reportService = reportService;
     }
 
+    // Обработчик HTTP GET-запроса по пути /report/{id}
     @GetMapping("/{id}")
     public String Get(@PathVariable long id, Model model) {
 
+        // Вызов метода GetPayRollCard(id) сервиса reportService для получения данных о заработной плате
         List<PayRollCardDTO> prc = reportService.GetPayRollCard(id);
 
+        // Вызов метода GetEmployee(id) сервиса reportService для получения данных о сотруднике
         EmployeeDTO e = reportService.GetEmployee(id);
 
+        // Добавление данных о заработной плате и сотруднике в модель, чтобы передать их в представление
         model.addAttribute("PayRollCard", prc);
-
         model.addAttribute("Employee", e);
 
+        // Возвращение имени представления "report", которое будет отображено пользователю
         return "report";
     }
 }
+

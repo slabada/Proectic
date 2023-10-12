@@ -21,6 +21,7 @@ public class SecurityConfig {
         this.userService = userService;
     }
 
+    // Конфигурация безопасности с использованием SecurityFilterChain
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -28,30 +29,24 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/css/**",
                                 "/js/**")
-                        .permitAll()
+                        .permitAll() // Разрешение доступа к определенным URL-ам без аутентификации
                         .anyRequest()
-                        .authenticated()
+                        .authenticated() // Все остальные URL-ы требуют аутентификации
                 )
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(Customizer.withDefaults()); // Использование HTTP Basic Authentication
 
         return http.build();
     }
 
+    // Конфигурация менеджера аутентификации
     @Bean
     public ReactiveAuthenticationManager authenticationManager() {
         UserDetailsRepositoryReactiveAuthenticationManager authenticationManager =
                 new UserDetailsRepositoryReactiveAuthenticationManager(userService);
+
+        // Использование NoOpPasswordEncoder для хранения паролей
         authenticationManager.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+
         return authenticationManager;
     }
-
-//    @Bean
-//    public MapReactiveUserDetailsService userDetailsService() {
-//        UserDetails user = User.withDefaultPasswordEncoder()
-//                .username(userService)
-//                .password("test")
-//                .roles("USER")
-//                .build();
-//        return new MapReactiveUserDetailsService(user);
-//    }
 }

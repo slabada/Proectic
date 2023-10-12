@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+// Модель должности для сотрудника
+
 @Entity
 @Getter
 @Setter

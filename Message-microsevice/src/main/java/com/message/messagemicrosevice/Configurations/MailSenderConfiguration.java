@@ -11,6 +11,7 @@ import java.util.Properties;
 @Configuration
 public class MailSenderConfiguration {
 
+    // Поля класса, представляющие настройки отправки почты
     @Value("${spring.mail.host}")
     private String host;
 
@@ -29,20 +30,24 @@ public class MailSenderConfiguration {
     @Value("${mail.debug}")
     private String debug;
 
+    // Метод sender() конфигурирует и возвращает JavaMailSender
     @Bean
-    public JavaMailSender sender(){
+    public JavaMailSender sender() {
         JavaMailSenderImpl s = new JavaMailSenderImpl();
 
-        s.setHost(host);s.setUsername(username);
+        // Установка настроек хоста, имени пользователя, пароля, порта и протокола
+        s.setHost(host);
+        s.setUsername(username);
         s.setPassword(password);
         s.setPort(port);
         s.setProtocol(protocol);
 
+        // Получение JavaMailProperties и установка дополнительных свойств
         Properties p = s.getJavaMailProperties();
-
         p.setProperty("mail.transport.protocol", protocol);
         p.setProperty("mail.debug", debug);
 
         return s;
     }
 }
+

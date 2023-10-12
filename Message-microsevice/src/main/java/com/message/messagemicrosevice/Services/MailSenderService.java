@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MailSenderService {
+
     protected final JavaMailSender sender;
     protected final Format format;
     protected final Conversion conversion;
 
+    // Значения, загруженные из конфигурации Spring
     @Value("${spring.mail.username}")
     private String username;
 
@@ -26,19 +28,26 @@ public class MailSenderService {
         this.conversion = conversion;
     }
 
+    // Аннотация @KafkaListener указывает на то, что метод KafkaListen будет слушать сообщения из указанной темы Kafka
     @KafkaListener(id = "jsonEmployee", topics = "SendBuffer")
-    private void KafkaListen(String jsonEmployee){
+    private void KafkaListen(String jsonEmployee) {
+        // При получении сообщения из Kafka, вызывается метод Send
         Send(jsonEmployee);
     }
 
-    public void Send(String je){
+    // Метод Send для отправки электронного письма
+    public void Send(String jsonEmployee) {
+        // Создание объекта SimpleMailMessage для формирования письма
         SimpleMailMessage ms = new SimpleMailMessage();
 
+        // Установка отправителя, получателя, темы и текста письма
         ms.setFrom(username);
-        ms.setTo(conversion.toJson(je).get("email").toString());
+        ms.setTo(conversion.toJson(jsonEmployee).get("email").toString());
         ms.setSubject(subject);
-        ms.setText(format.formattedText(je));
+        ms.setText(format.formattedText(jsonEmployee));
 
+        // Использование JavaMailSender для отправки письма
         sender.send(ms);
     }
 }
+

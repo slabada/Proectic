@@ -19,62 +19,91 @@ public class TaxBenefitService {
         this.taxBenefitRepository = taxBenefitRepository;
     }
 
-    public TaxBenefitModel Create(TaxBenefitModel b){
+    // Метод Create для создания записи о налоговых льготах
+    public TaxBenefitModel Create(TaxBenefitModel b) {
 
+        // Поиск записи по имени налоговой льготы
         Optional<TaxBenefitModel> bDb = taxBenefitRepository.findByName(b.getName());
 
-        if(bDb.isPresent()) throw new CustomExceptions.InvalidIdException();
+        // Если запись уже существует, генерируется исключение
+        if (bDb.isPresent())
+            throw new CustomExceptions.InvalidIdException();
 
+        // Сохранение новой записи
         taxBenefitRepository.save(b);
 
         return b;
     }
 
-    public Optional<TaxBenefitModel> Get(long id){
+    // Метод Get для получения записи о налоговой льготе по идентификатору
+    public Optional<TaxBenefitModel> Get(long id) {
 
-        if(id <= 0) throw new CustomExceptions.InvalidIdException();
+        // Проверка на недопустимый идентификатор
+        if (id <= 0)
+            throw new CustomExceptions.InvalidIdException();
 
+        // Поиск записи по идентификатору
         Optional<TaxBenefitModel> bDb = taxBenefitRepository.findById(id);
 
-        if(bDb.isEmpty()) throw new CustomExceptions.TaxBenefitNotFoundException();
+        // Если запись не найдена, генерируется исключение
+        if (bDb.isEmpty())
+            throw new CustomExceptions.TaxBenefitNotFoundException();
 
         return bDb;
     }
 
-    public Optional<TaxBenefitModel> Put(long id, TaxBenefitModel b){
+    // Метод Put для обновления записи о налоговой льготе
+    public Optional<TaxBenefitModel> Put(long id, TaxBenefitModel b) {
 
-        if(id <= 0) throw new CustomExceptions.InvalidIdException();
+        // Проверка на недопустимый идентификатор
+        if (id <= 0)
+            throw new CustomExceptions.InvalidIdException();
 
+        // Поиск записи по идентификатору
         Optional<TaxBenefitModel> bDb = taxBenefitRepository.findById(id);
 
-        if(bDb.isEmpty()) throw new CustomExceptions.TaxBenefitNotFoundException();
+        // Если запись не найдена, генерируется исключение
+        if (bDb.isEmpty())
+            throw new CustomExceptions.TaxBenefitNotFoundException();
 
+        // Поиск записи по имени налоговой льготы
         Optional<TaxBenefitModel> benefitName = taxBenefitRepository.findByName(b.getName());
 
-        if(benefitName.isPresent()) throw new CustomExceptions.TaxBenefitAlreadyExistsException();
+        // Если запись с таким именем уже существует, генерируется исключение
+        if (benefitName.isPresent())
+            throw new CustomExceptions.TaxBenefitAlreadyExistsException();
 
+        // Установка идентификатора и сохранение обновленной записи
         b.setId(id);
-
         taxBenefitRepository.save(b);
 
         return Optional.of(b);
     }
 
-    public void Delete(long id){
+    // Метод Delete для удаления записи о налоговой льготе
+    public void Delete(long id) {
 
-        if(id <= 0) throw new CustomExceptions.InvalidIdException();
+        // Проверка на недопустимый идентификатор
+        if (id <= 0)
+            throw new CustomExceptions.InvalidIdException();
 
+        // Поиск записи по идентификатору
         Optional<TaxBenefitModel> bDb = taxBenefitRepository.findById(id);
 
-        if(bDb.isEmpty()) throw new CustomExceptions.TaxBenefitNotFoundException();
+        // Если запись не найдена, генерируется исключение
+        if (bDb.isEmpty())
+            throw new CustomExceptions.TaxBenefitNotFoundException();
 
+        // Удаление записи по идентификатору
         taxBenefitRepository.deleteById(id);
     }
 
-    public Set<TaxBenefitModel> Check(PayRollCardModel prc){
+    // Метод Check для проверки налоговых льгот в объекте PayRollCardModel
+    public Set<TaxBenefitModel> Check(PayRollCardModel prc) {
         Set<TaxBenefitModel> result = new HashSet<>();
-        if(prc.getTaxBenefit() != null){
-            for(TaxBenefitModel b : prc.getTaxBenefit()){
+        if (prc.getTaxBenefit() != null) {
+            for (TaxBenefitModel b : prc.getTaxBenefit()) {
+                // Поиск налоговой льготы в репозитории по идентификатору
                 Optional<TaxBenefitModel> bDb = taxBenefitRepository.findById(b.getId());
                 bDb.ifPresent(result::add);
             }
@@ -82,3 +111,4 @@ public class TaxBenefitService {
         return result;
     }
 }
+

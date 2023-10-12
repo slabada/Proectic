@@ -13,7 +13,6 @@ import java.util.List;
 public class ReportService {
 
     protected final EmployeeServiceClient employeeServiceClient;
-
     protected final FinanceEmployeeServiceClient financeEmployeeServiceClient;
 
     public ReportService(EmployeeServiceClient employeeServiceClient,
@@ -22,17 +21,26 @@ public class ReportService {
         this.financeEmployeeServiceClient = financeEmployeeServiceClient;
     }
 
-    public EmployeeDTO GetEmployee(long id){
+    // Метод GetEmployee для получения данных о сотруднике по идентификатору
+    public EmployeeDTO GetEmployee(long id) {
 
-        if(id <= 0) throw new CustomExceptions.InvalidIdException();
+        // Проверка на недопустимый идентификатор
+        if (id <= 0)
+            throw new CustomExceptions.InvalidIdException();
 
+        // Вызов метода getEmployee(id) из employeeServiceClient для получения данных о сотруднике
         return employeeServiceClient.getEmployee(id);
     }
 
-    public List<PayRollCardDTO> GetPayRollCard(long id){
+    // Метод GetPayRollCard для получения данных о заработной плате сотрудника по идентификатору
+    public List<PayRollCardDTO> GetPayRollCard(long id) {
 
-        if(id <= 0) throw new CustomExceptions.InvalidIdException();
+        // Проверка на недопустимый идентификатор
+        if (id <= 0)
+            throw new CustomExceptions.InvalidIdException();
 
+        // Вызов метода getFinanceEmployee(id) из financeEmployeeServiceClient для получения данных о заработной плате
         return financeEmployeeServiceClient.getFinanceEmployee(id);
     }
 }
+

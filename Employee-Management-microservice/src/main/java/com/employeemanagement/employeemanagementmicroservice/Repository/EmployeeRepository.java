@@ -9,9 +9,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+// Репозиторий :)
+
 @Repository
 public interface EmployeeRepository extends JpaRepository<EmployeeModel, Long> {
 
+    // Пользовательский метод для поиска сотрудников на основе фильтра
     @Query("SELECT x from EmployeeModel x " +
             "WHERE (:#{#filter.lastName} IS NULL OR x.lastName = :#{#filter.lastName}) " +
             "and (:#{#filter.firstName} IS NULL OR x.firstName = :#{#filter.firstName}) " +

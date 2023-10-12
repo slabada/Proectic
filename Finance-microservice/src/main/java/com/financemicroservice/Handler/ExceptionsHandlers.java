@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import java.net.ConnectException;
 
+// Этот класс представляет обработчики исключений, которые будут использоваться в микросервисе.
+
 @RestControllerAdvice
 public class ExceptionsHandlers {
     @ExceptionHandler(CustomExceptions.InvalidIdException.class)
