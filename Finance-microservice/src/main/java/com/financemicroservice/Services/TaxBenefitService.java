@@ -1,12 +1,13 @@
-package com.financemicroservice.Services;
+package com.financemicroservice.services;
 
-import com.financemicroservice.Handler.CustomExceptions;
-import com.financemicroservice.Models.PayRollCardModel;
-import com.financemicroservice.Models.TaxBenefitModel;
-import com.financemicroservice.Repositorys.TaxBenefitRepository;
+import com.financemicroservice.models.PayRollCardModel;
+import com.financemicroservice.models.TaxBenefitModel;
+import com.financemicroservice.repository.TaxBenefitRepository;
+import org.handler.CustomExceptions;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public class TaxBenefitService {
     }
 
     // Метод Create для создания записи о налоговых льготах
-    public TaxBenefitModel Create(TaxBenefitModel b) {
+    public TaxBenefitModel create(TaxBenefitModel b) {
 
         // Поиск записи по имени налоговой льготы
         Optional<TaxBenefitModel> bDb = taxBenefitRepository.findByName(b.getName());
@@ -36,7 +37,7 @@ public class TaxBenefitService {
     }
 
     // Метод Get для получения записи о налоговой льготе по идентификатору
-    public Optional<TaxBenefitModel> Get(long id) {
+    public Optional<TaxBenefitModel> get(long id) {
 
         // Проверка на недопустимый идентификатор
         if (id <= 0)
@@ -53,7 +54,7 @@ public class TaxBenefitService {
     }
 
     // Метод Put для обновления записи о налоговой льготе
-    public Optional<TaxBenefitModel> Put(long id, TaxBenefitModel b) {
+    public Optional<TaxBenefitModel> put(long id, TaxBenefitModel b) {
 
         // Проверка на недопустимый идентификатор
         if (id <= 0)
@@ -81,7 +82,7 @@ public class TaxBenefitService {
     }
 
     // Метод Delete для удаления записи о налоговой льготе
-    public void Delete(long id) {
+    public void delete(long id) {
 
         // Проверка на недопустимый идентификатор
         if (id <= 0)
@@ -99,15 +100,20 @@ public class TaxBenefitService {
     }
 
     // Метод Check для проверки налоговых льгот в объекте PayRollCardModel
-    public Set<TaxBenefitModel> Check(PayRollCardModel prc) {
+    public Set<TaxBenefitModel> check(PayRollCardModel prc) {
+
         Set<TaxBenefitModel> result = new HashSet<>();
+
         if (prc.getTaxBenefit() != null) {
-            for (TaxBenefitModel b : prc.getTaxBenefit()) {
-                // Поиск налоговой льготы в репозитории по идентификатору
-                Optional<TaxBenefitModel> bDb = taxBenefitRepository.findById(b.getId());
-                bDb.ifPresent(result::add);
-            }
+
+            List<Long> b = prc.getTaxBenefit().stream()
+                    .map(TaxBenefitModel::getId)
+                    .toList();
+
+            List<TaxBenefitModel> bDb = taxBenefitRepository.findAllById(b);
+            result.addAll(bDb);
         }
+
         return result;
     }
 }

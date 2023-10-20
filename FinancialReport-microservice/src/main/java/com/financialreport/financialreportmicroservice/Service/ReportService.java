@@ -1,10 +1,10 @@
-package com.financialreport.financialreportmicroservice.Service;
+package com.financialreport.financialreportmicroservice.service;
 
-import com.financialreport.financialreportmicroservice.DTO.DTOModels.EmployeeDTO;
-import com.financialreport.financialreportmicroservice.DTO.DTOModels.PayRollCardDTO;
-import com.financialreport.financialreportmicroservice.DTO.SeviceClient.EmployeeServiceClient;
-import com.financialreport.financialreportmicroservice.DTO.SeviceClient.FinanceEmployeeServiceClient;
-import com.financialreport.financialreportmicroservice.Handler.CustomExceptions;
+import com.financialreport.financialreportmicroservice.DTOModels.EmployeeDTO;
+import com.financialreport.financialreportmicroservice.DTOModels.PayRollCardDTO;
+import com.financialreport.financialreportmicroservice.seviceClient.EmployeeServiceClient;
+import com.financialreport.financialreportmicroservice.seviceClient.FinanceEmployeeServiceClient;
+import org.handler.CustomExceptions;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,22 +22,20 @@ public class ReportService {
     }
 
     // Метод GetEmployee для получения данных о сотруднике по идентификатору
-    public EmployeeDTO GetEmployee(long id) {
+    public EmployeeDTO getEmployee(long id) {
 
         // Проверка на недопустимый идентификатор
-        if (id <= 0)
-            throw new CustomExceptions.InvalidIdException();
+        if (id <= 0) throw new CustomExceptions.InvalidIdException();
 
         // Вызов метода getEmployee(id) из employeeServiceClient для получения данных о сотруднике
         return employeeServiceClient.getEmployee(id);
     }
 
     // Метод GetPayRollCard для получения данных о заработной плате сотрудника по идентификатору
-    public List<PayRollCardDTO> GetPayRollCard(long id) {
+    public List<PayRollCardDTO> getPayRollCard(long id) {
 
         // Проверка на недопустимый идентификатор
-        if (id <= 0)
-            throw new CustomExceptions.InvalidIdException();
+        if (id <= 0) throw new CustomExceptions.InvalidIdException();
 
         // Вызов метода getFinanceEmployee(id) из financeEmployeeServiceClient для получения данных о заработной плате
         return financeEmployeeServiceClient.getFinanceEmployee(id);

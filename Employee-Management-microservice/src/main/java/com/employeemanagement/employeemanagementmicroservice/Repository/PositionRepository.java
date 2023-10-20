@@ -1,6 +1,6 @@
-package com.employeemanagement.employeemanagementmicroservice.Repository;
+package com.employeemanagement.employeemanagementmicroservice.repository;
 
-import com.employeemanagement.employeemanagementmicroservice.Models.PositionModel;
+import com.employeemanagement.employeemanagementmicroservice.models.PositionModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

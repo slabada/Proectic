@@ -1,7 +1,6 @@
-package com.gateway.gatewaymicroservice.Service;
+package com.gateway.gatewaymicroservice.service;
 
-import com.gateway.gatewaymicroservice.Models.UserModel;
-import com.gateway.gatewaymicroservice.Repository.UserRepository;
+import com.gateway.gatewaymicroservice.repository.UserRepository;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

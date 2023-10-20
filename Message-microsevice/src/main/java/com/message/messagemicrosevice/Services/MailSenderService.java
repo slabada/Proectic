@@ -1,19 +1,19 @@
-package com.message.messagemicrosevice.Services;
+package com.message.messagemicrosevice.services;
 
-import com.message.messagemicrosevice.Util.Conversion;
-import com.message.messagemicrosevice.Util.Format;
+import com.message.messagemicrosevice.DTOModels.SendKafkaDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+
+import java.text.MessageFormat;
 
 @Service
 public class MailSenderService {
 
     protected final JavaMailSender sender;
-    protected final Format format;
-    protected final Conversion conversion;
 
     // Значения, загруженные из конфигурации Spring
     @Value("${spring.mail.username}")
@@ -22,29 +22,41 @@ public class MailSenderService {
     @Value("${subject.mail}")
     private String subject;
 
-    public MailSenderService(JavaMailSender sender, Format format, Conversion conversion) {
+    // Значение, загруженное из конфигурации Spring
+    @Value("${text.mail}")
+    private String text;
+
+    public MailSenderService(JavaMailSender sender) {
         this.sender = sender;
-        this.format = format;
-        this.conversion = conversion;
     }
 
     // Аннотация @KafkaListener указывает на то, что метод KafkaListen будет слушать сообщения из указанной темы Kafka
-    @KafkaListener(id = "jsonEmployee", topics = "SendBuffer")
-    private void KafkaListen(String jsonEmployee) {
+    @KafkaListener(id = "sendKafka", topics = "SendBuffer")
+    private void kafkaListen(SendKafkaDTO sendKafkaDTO) {
         // При получении сообщения из Kafka, вызывается метод Send
-        Send(jsonEmployee);
+        System.out.println(sendKafkaDTO.getFirstName());
     }
 
     // Метод Send для отправки электронного письма
-    public void Send(String jsonEmployee) {
+    public void send(SendKafkaDTO sendKafkaDTO) {
+
         // Создание объекта SimpleMailMessage для формирования письма
         SimpleMailMessage ms = new SimpleMailMessage();
 
+        //Форматируем текст для письма
+        String massage = MessageFormat.format(
+                text,
+                sendKafkaDTO.getFirstName(),
+                sendKafkaDTO.getData(),
+                sendKafkaDTO.getTotalAmount()
+                )
+                .replace("\"", "");
+
         // Установка отправителя, получателя, темы и текста письма
         ms.setFrom(username);
-        ms.setTo(conversion.toJson(jsonEmployee).get("email").toString());
+        ms.setTo(sendKafkaDTO.getEmail());
         ms.setSubject(subject);
-        ms.setText(format.formattedText(jsonEmployee));
+        ms.setText(massage);
 
         // Использование JavaMailSender для отправки письма
         sender.send(ms);

@@ -1,7 +1,6 @@
-package com.gateway.gatewaymicroservice.Repository;
+package com.gateway.gatewaymicroservice.repository;
 
-import com.gateway.gatewaymicroservice.Models.UserModel;
-import org.springframework.data.relational.core.mapping.Table;
+import com.gateway.gatewaymicroservice.models.UserModel;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;

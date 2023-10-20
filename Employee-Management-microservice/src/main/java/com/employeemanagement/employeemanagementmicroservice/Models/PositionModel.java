@@ -1,4 +1,4 @@
-package com.employeemanagement.employeemanagementmicroservice.Models;
+package com.employeemanagement.employeemanagementmicroservice.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

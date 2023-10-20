@@ -1,7 +1,7 @@
-package com.financemicroservice.Controllers;
+package com.financemicroservice.controllers;
 
-import com.financemicroservice.Models.TaxBenefitModel;
-import com.financemicroservice.Services.TaxBenefitService;
+import com.financemicroservice.models.TaxBenefitModel;
+import com.financemicroservice.services.TaxBenefitService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,28 +20,28 @@ public class TaxBenefitController {
     // Метод для создания новой налоговой льготы.
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public TaxBenefitModel Create(@RequestBody TaxBenefitModel b){
-        return taxBenefitService.Create(b);
+    public TaxBenefitModel create(@RequestBody TaxBenefitModel b){
+        return taxBenefitService.create(b);
     }
 
     // Метод для получения информации о налоговой льготе по идентификатору.
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<TaxBenefitModel> Get(@PathVariable long id){
-        return taxBenefitService.Get(id);
+    public Optional<TaxBenefitModel> get(@PathVariable long id){
+        return taxBenefitService.get(id);
     }
 
     // Метод для обновления информации о налоговой льготе по идентификатору.
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Optional<TaxBenefitModel> Put(@PathVariable long id, @RequestBody TaxBenefitModel b){
-        return taxBenefitService.Put(id, b);
+    public Optional<TaxBenefitModel> put(@PathVariable long id, @RequestBody TaxBenefitModel b){
+        return taxBenefitService.put(id, b);
     }
 
     // Метод для удаления налоговой льготы по идентификатору.
     @DeleteMapping("{id}")
-    public void Delete(@PathVariable long id){
-        taxBenefitService.Delete(id);
+    public void delete(@PathVariable long id){
+        taxBenefitService.delete(id);
     }
 }
 

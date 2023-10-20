@@ -1,15 +1,13 @@
-package com.financemicroservice.Services;
+package com.financemicroservice.services;
 
-import com.financemicroservice.Handler.CustomExceptions;
-import com.financemicroservice.Models.PayRollCardModel;
-import com.financemicroservice.Models.TaxRateModel;
-import com.financemicroservice.Repositorys.TaxRateRepository;
+import com.financemicroservice.models.PayRollCardModel;
+import com.financemicroservice.models.TaxRateModel;
+import com.financemicroservice.repository.TaxRateRepository;
+import org.handler.CustomExceptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class TaxRateService {
@@ -24,7 +22,7 @@ public class TaxRateService {
 
     // Метод CreateStartRate для создания начальной ставки
     @Bean
-    private void CreateStartRate() {
+    private void createStartRate() {
         // Создание объекта начальной ставки
         TaxRateModel StartRate = new TaxRateModel(1, 13, "НДФЛ");
 
@@ -32,12 +30,11 @@ public class TaxRateService {
         Optional<TaxRateModel> taxRateDb = taxRateRepository.findByName(StartRate.getName());
 
         // Если начальная ставка не существует, она сохраняется
-        if (taxRateDb.isEmpty())
-            taxRateRepository.save(StartRate);
+        if (taxRateDb.isEmpty()) taxRateRepository.save(StartRate);
     }
 
     // Метод Create для создания записи о налоговой ставке
-    public Optional<TaxRateModel> Create(TaxRateModel r) {
+    public Optional<TaxRateModel> create(TaxRateModel r) {
 
         // Поиск записи по имени налоговой ставки
         Optional<TaxRateModel> taxRateDb = taxRateRepository.findByName(r.getName());
@@ -53,7 +50,7 @@ public class TaxRateService {
     }
 
     // Метод Get для получения записи о налоговой ставке по идентификатору
-    public Optional<TaxRateModel> Get(long id) {
+    public Optional<TaxRateModel> get(long id) {
 
         // Проверка на недопустимый идентификатор
         if (id <= 0)
@@ -70,7 +67,7 @@ public class TaxRateService {
     }
 
     // Метод Put для обновления записи о налоговой ставке
-    public Optional<TaxRateModel> Put(long id, TaxRateModel r) {
+    public Optional<TaxRateModel> put(long id, TaxRateModel r) {
 
         // Проверка на недопустимый идентификатор
         if (id <= 0)
@@ -98,7 +95,7 @@ public class TaxRateService {
     }
 
     // Метод Delete для удаления записи о налоговой ставке
-    public void Delete(long id) {
+    public void delete(long id) {
 
         // Проверка на недопустимый идентификатор
         if (id <= 0)
@@ -116,19 +113,32 @@ public class TaxRateService {
     }
 
     // Метод Check для проверки налоговых ставок в объекте PayRollCardModel
-    public Set<TaxRateModel> Check(PayRollCardModel prc) {
+    public Set<TaxRateModel> check(PayRollCardModel prc) {
+
         Set<TaxRateModel> result = new HashSet<>();
+
         if (prc.getTaxRate() != null && prc.getTaxRate().size() > 0) {
-            for (TaxRateModel r : prc.getTaxRate()) {
-                // Поиск налоговой ставки в репозитории по идентификатору
-                Optional<TaxRateModel> rDb = taxRateRepository.findById(r.getId());
-                rDb.ifPresent(result::add);
+
+            // Поиск налоговой ставки в репозитории по идентификатору
+            List<Long> r = prc.getTaxRate().stream()
+                    .map(TaxRateModel::getId)
+                    .toList();
+
+            List<TaxRateModel> rDb = taxRateRepository.findAllById(r);
+            result.addAll(rDb);
+
+            boolean hasNDFL = rDb.stream().map(TaxRateModel::getName).anyMatch("НДФЛ"::equals);
+
+            if(!hasNDFL){
+                Optional<TaxRateModel> NDFL = taxRateRepository.findByName("НДФЛ");
+                NDFL.ifPresent(result::add);
             }
-        } else {
-            // Если налоговые ставки не указаны, используется "НДФЛ"
-            Optional<TaxRateModel> rDb = taxRateRepository.findByName("НДФЛ");
-            rDb.ifPresent(result::add);
         }
+        else {
+            Optional<TaxRateModel> NDFL = taxRateRepository.findByName("НДФЛ");
+            NDFL.ifPresent(result::add);
+        }
+
         return result;
     }
 }

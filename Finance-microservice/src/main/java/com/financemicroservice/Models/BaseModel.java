@@ -1,4 +1,4 @@
-package com.financemicroservice.Models;
+package com.financemicroservice.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

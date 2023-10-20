@@ -1,6 +1,6 @@
-package com.gateway.gatewaymicroservice.Config;
+package com.gateway.gatewaymicroservice.config;
 
-import com.gateway.gatewaymicroservice.Service.UserService;
+import com.gateway.gatewaymicroservice.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;

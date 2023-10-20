@@ -1,8 +1,9 @@
-package com.employeemanagement.employeemanagementmicroservice.Services;
+package com.employeemanagement.employeemanagementmicroservice.services;
 
-import com.employeemanagement.employeemanagementmicroservice.Handler.CustomExceptions;
-import com.employeemanagement.employeemanagementmicroservice.Models.PositionModel;
-import com.employeemanagement.employeemanagementmicroservice.Repository.PositionRepository;
+import com.employeemanagement.employeemanagementmicroservice.customRepository.CustomPositionRepository;
+import com.employeemanagement.employeemanagementmicroservice.models.PositionModel;
+import com.employeemanagement.employeemanagementmicroservice.repository.PositionRepository;
+import org.handler.CustomExceptions;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -12,12 +13,16 @@ public class PositionService {
 
     protected final PositionRepository positionRepository;
 
-    public PositionService(PositionRepository positionRepository) {
+    protected final CustomPositionRepository customPositionRepository;
+
+    public PositionService(PositionRepository positionRepository,
+                           CustomPositionRepository customPositionRepository) {
         this.positionRepository = positionRepository;
+        this.customPositionRepository = customPositionRepository;
     }
 
     // Метод для создания новой должности.
-    public PositionModel Create(PositionModel p) {
+    public PositionModel create(PositionModel p) {
 
         // Проверка, существует ли должность с таким именем.
         boolean pByName = positionRepository.existsByName(p.getName());
@@ -32,13 +37,16 @@ public class PositionService {
     }
 
     // Метод для получения информации о должности по идентификатору.
-    public Optional<PositionModel> Get(long id) {
+    public Optional<PositionModel> get(long id) {
 
         // Проверка, является ли предоставленный идентификатор валидным.
         if (id <= 0) throw new CustomExceptions.InvalidIdException();
 
         // Получение информации о должности с использованием репозитория.
-        Optional<PositionModel> p = positionRepository.findById(id);
+//        Optional<PositionModel> p = positionRepository.findById(id);
+
+        // Получение информации о должности с использованием репозитория.
+        Optional<PositionModel> p = customPositionRepository.findById(id);
 
         // Проверка, была ли найдена должность с данным идентификатором.
         if (p.isEmpty()) throw new CustomExceptions.PositionNotFoundException();
@@ -47,7 +55,7 @@ public class PositionService {
     }
 
     // Метод для обновления информации о должности.
-    public PositionModel Put(long id, PositionModel p) {
+    public PositionModel put(long id, PositionModel p) {
 
         // Проверка, является ли предоставленный идентификатор валидным.
         if (id <= 0) throw new CustomExceptions.InvalidIdException();
@@ -66,7 +74,7 @@ public class PositionService {
     }
 
     // Метод для удаления должности по идентификатору.
-    public void Delete(long id) {
+    public void delete(long id) {
 
         // Проверка, является ли предоставленный идентификатор валидным.
         if (id <= 0) throw new CustomExceptions.InvalidIdException();

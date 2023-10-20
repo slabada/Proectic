@@ -1,8 +1,8 @@
-package com.financialreport.financialreportmicroservice.Controllers;
+package com.financialreport.financialreportmicroservice.controllers;
 
-import com.financialreport.financialreportmicroservice.DTO.DTOModels.EmployeeDTO;
-import com.financialreport.financialreportmicroservice.DTO.DTOModels.PayRollCardDTO;
-import com.financialreport.financialreportmicroservice.Service.ReportService;
+import com.financialreport.financialreportmicroservice.DTOModels.EmployeeDTO;
+import com.financialreport.financialreportmicroservice.DTOModels.PayRollCardDTO;
+import com.financialreport.financialreportmicroservice.service.ReportService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,13 +23,13 @@ public class ReportController {
 
     // Обработчик HTTP GET-запроса по пути /report/{id}
     @GetMapping("/{id}")
-    public String Get(@PathVariable long id, Model model) {
+    public String get(@PathVariable long id, Model model) {
 
         // Вызов метода GetPayRollCard(id) сервиса reportService для получения данных о заработной плате
-        List<PayRollCardDTO> prc = reportService.GetPayRollCard(id);
+        List<PayRollCardDTO> prc = reportService.getPayRollCard(id);
 
         // Вызов метода GetEmployee(id) сервиса reportService для получения данных о сотруднике
-        EmployeeDTO e = reportService.GetEmployee(id);
+        EmployeeDTO e = reportService.getEmployee(id);
 
         // Добавление данных о заработной плате и сотруднике в модель, чтобы передать их в представление
         model.addAttribute("PayRollCard", prc);

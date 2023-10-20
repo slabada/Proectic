@@ -73,6 +73,11 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-openfeign</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.handler</groupId>
+			<artifactId>Handler</artifactId>
+			<version>1.0</version>
+		</dependency>
 
 	</dependencies>
 	<dependencyManagement>
@@ -99,6 +104,13 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.bending.spring.kafka.KafkaApplication</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>

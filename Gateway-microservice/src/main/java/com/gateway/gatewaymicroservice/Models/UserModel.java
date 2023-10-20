@@ -1,9 +1,8 @@
-package com.gateway.gatewaymicroservice.Models;
+package com.gateway.gatewaymicroservice.models;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

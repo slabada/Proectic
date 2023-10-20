@@ -1,13 +1,13 @@
-package com.financemicroservice.Services;
+package com.financemicroservice.services;
 
-import com.financemicroservice.DTO.DTOModels.EmployeeDTO;
-import com.financemicroservice.DTO.ServiceClient.EmployeeServiceClient;
-import com.financemicroservice.Handler.CustomExceptions;
-import com.financemicroservice.Models.PayRollCardModel;
-import com.financemicroservice.Models.TaxBenefitModel;
-import com.financemicroservice.Models.TaxRateModel;
-import com.financemicroservice.Repositorys.PayRollCardRepository;
-import com.financemicroservice.Util.TaxCalculation;
+import com.financemicroservice.DTOModels.EmployeeDTO;
+import com.financemicroservice.models.PayRollCardModel;
+import com.financemicroservice.models.TaxBenefitModel;
+import com.financemicroservice.models.TaxRateModel;
+import com.financemicroservice.repository.PayRollCardRepository;
+import com.financemicroservice.serviceClient.EmployeeServiceClient;
+import com.financemicroservice.util.TaxCalculation;
+import org.handler.CustomExceptions;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -42,7 +42,13 @@ public class PayRollCardService {
     }
 
     // Метод Create для создания записи о заработной плате
-    public Optional<PayRollCardModel> Create(PayRollCardModel prc) {
+    public Optional<PayRollCardModel> create(PayRollCardModel prc) {
+
+        // Проверка на недопустимый идентификатор
+        if(prc.getEmployeeId() <= 0) throw new CustomExceptions.InvalidIdException();
+
+        // Получение информации о сотруднике с помощью клиента EmployeeServiceClient
+        EmployeeDTO eDTO = employeeServiceClient.getPositionById(prc.getEmployeeId());
 
         // Проверка на отрицательную зарплату
         if (prc.getSalary().compareTo(BigDecimal.ZERO) == 0)
@@ -53,13 +59,13 @@ public class PayRollCardService {
             throw new CustomExceptions.NegativePayDayException();
 
         // Вызов сервиса для проверки налоговых льгот
-        Set<TaxBenefitModel> bc = taxBenefitService.Check(prc);
+        Set<TaxBenefitModel> bc = taxBenefitService.check(prc);
 
         // Установка налоговых льгот в объект PayRollCardModel
         prc.setTaxBenefit(bc);
 
         // Вызов сервиса для проверки налоговых ставок
-        Set<TaxRateModel> rc = taxRateService.Check(prc);
+        Set<TaxRateModel> rc = taxRateService.check(prc);
 
         // Установка налоговых ставок в объект PayRollCardModel
         prc.setTaxRate(rc);
@@ -68,14 +74,14 @@ public class PayRollCardService {
 
         // Рассчет общей суммы с учетом налоговых льгот
         if (prc.getTaxBenefit() != null && prc.getTaxBenefit().size() != 0) {
-            totalAmount = taxCalculation.Calculation(
+            totalAmount = taxCalculation.calculation(
                     prc.getSalary(),
                     taxCalculation.totalRatePercentage(prc.getTaxRate()),
                     taxCalculation.totalBenefitPercentage(prc.getTaxBenefit())
             );
         } else {
             // Рассчет общей суммы без учета налоговых льгот
-            totalAmount = taxCalculation.Calculation(
+            totalAmount = taxCalculation.calculation(
                     prc.getSalary(),
                     taxCalculation.totalRatePercentage(prc.getTaxRate())
             );
@@ -87,52 +93,96 @@ public class PayRollCardService {
         // Сохранение объекта PayRollCardModel в репозитории
         payRollCardRepository.save(prc);
 
-        // Получение информации о сотруднике с помощью клиента EmployeeServiceClient
-        EmployeeDTO eDTO = employeeServiceClient.getPositionById(prc.getEmployeeId());
-
         // Отправка данных в Kafka
-        kafkaService.SendBufferKafka(eDTO, prc.getPayday(), prc.getTotalAmount());
+        kafkaService.sendBufferKafka(eDTO, prc.getPayday(), prc.getTotalAmount());
 
         return Optional.of(prc);
     }
 
     // Метод Get для получения записи о заработной плате по идентификатору
-    public Optional<PayRollCardModel> Get(long id) {
+    public Optional<PayRollCardModel> get(long id) {
+
+        // Проверка на недопустимый идентификатор
+        if (id <= 0) throw new CustomExceptions.InvalidIdException();
+
         Optional<PayRollCardModel> prc = payRollCardRepository.findById(id);
 
         // Если запись не найдена, генерируется исключение
-        if (prc.isEmpty())
-            throw new CustomExceptions.PayRollCardFoundException();
+        if (prc.isEmpty()) throw new CustomExceptions.PayRollCardFoundException();
 
         return prc;
     }
 
     // Метод GetEmployeeAll для получения всех записей о заработной плате сотрудника
-    public List<PayRollCardModel> GetEmployeeAll(long id) {
+    public List<PayRollCardModel> getEmployeeAll(long id) {
+
+        // Проверка на недопустимый идентификатор
+        if (id <= 0) throw new CustomExceptions.InvalidIdException();
+
         List<PayRollCardModel> prc = payRollCardRepository.findAllByEmployeeId(id);
 
         // Если записи не найдены, генерируется исключение
         if (prc.isEmpty())
-            throw new CustomExceptions.EmployeeFoundException();
+            throw new CustomExceptions.EmployeeNotFoundException();
 
         return prc;
     }
 
-    // Метод Put для обновления записи о заработной плате
-    public PayRollCardModel Put(long id, PayRollCardModel prc) {
+    public PayRollCardModel put(long id, PayRollCardModel prc) {
 
-        // Проверка на недопустимый идентификатор
-        if (id <= 0)
-            throw new CustomExceptions.InvalidIdException();
+        // Проверка на недопустимый идентификатор id
+        if (id <= 0) throw new CustomExceptions.InvalidIdException();
+
+        // Проверка на недопустимый идентификатор сотрудника
+        if(prc.getEmployeeId() <= 0) throw new CustomExceptions.InvalidIdException();
 
         // Поиск записи по идентификатору
         Optional<PayRollCardModel> prcDb = payRollCardRepository.findById(id);
 
         // Если запись не найдена, генерируется исключение
-        if (prcDb.isEmpty())
-            throw new CustomExceptions.PayRollCardFoundException();
+        if (prcDb.isEmpty()) throw new CustomExceptions.PayRollCardFoundException();
 
-        // Установка идентификатора и сохранение обновленной записи
+        // Проверка на отрицательную зарплату
+        if (prc.getSalary().compareTo(BigDecimal.ZERO) == 0)
+            throw new CustomExceptions.NegativeSalaryException();
+
+        // Проверка на наличие даты выплаты и равенство текущей дате
+        if (prc.getPayday() == null || prc.getPayday().equals(LocalDate.now()))
+            throw new CustomExceptions.NegativePayDayException();
+
+        // Вызов сервиса для проверки налоговых льгот
+        Set<TaxBenefitModel> bc = taxBenefitService.check(prc);
+
+        // Установка налоговых льгот в объект PayRollCardModel
+        prc.setTaxBenefit(bc);
+
+        // Вызов сервиса для проверки налоговых ставок
+        Set<TaxRateModel> rc = taxRateService.check(prc);
+
+        // Установка налоговых ставок в объект PayRollCardModel
+        prc.setTaxRate(rc);
+
+        BigDecimal totalAmount;
+
+        // Рассчет общей суммы с учетом налоговых льгот
+        if (prc.getTaxBenefit() != null && prc.getTaxBenefit().size() != 0) {
+            totalAmount = taxCalculation.calculation(
+                    prc.getSalary(),
+                    taxCalculation.totalRatePercentage(prc.getTaxRate()),
+                    taxCalculation.totalBenefitPercentage(prc.getTaxBenefit())
+            );
+        } else {
+            // Рассчет общей суммы без учета налоговых льгот
+            totalAmount = taxCalculation.calculation(
+                    prc.getSalary(),
+                    taxCalculation.totalRatePercentage(prc.getTaxRate())
+            );
+        }
+
+        // Установка общей суммы с округлением до 2 знаков после запятой
+        prc.setTotalAmount(totalAmount.setScale(2, RoundingMode.HALF_DOWN));
+
+        // Сохранение объекта PayRollCardModel в репозитории
         prc.setId(id);
         payRollCardRepository.save(prc);
 
@@ -140,18 +190,16 @@ public class PayRollCardService {
     }
 
     // Метод Delete для удаления записи о заработной плате
-    public void Delete(long id) {
+    public void delete(long id) {
 
         // Проверка на недопустимый идентификатор
-        if (id <= 0)
-            throw new CustomExceptions.InvalidIdException();
+        if (id <= 0) throw new CustomExceptions.InvalidIdException();
 
         // Поиск записи по идентификатору
         Optional<PayRollCardModel> prcDb = payRollCardRepository.findById(id);
 
         // Если запись не найдена, генерируется исключение
-        if (prcDb.isEmpty())
-            throw new CustomExceptions.PayRollCardFoundException();
+        if (prcDb.isEmpty()) throw new CustomExceptions.PayRollCardFoundException();
 
         // Удаление записи по идентификатору
         payRollCardRepository.deleteById(id);

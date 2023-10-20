@@ -1,4 +1,4 @@
-package com.financemicroservice.Models;
+package com.financemicroservice.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,6 +25,8 @@ public class PayRollCardModel {
     private long employeeId;
     private BigDecimal salary;
     private LocalDate payday;
+
+    // В данном случае Lazy не ставил по такой же причине, что и в EmployeeModel
     @ManyToMany
     @JoinTable(
             joinColumns = @JoinColumn(name = "PayRollCard"),
@@ -32,6 +34,9 @@ public class PayRollCardModel {
             name = "PayRollCard_Benefit"
     )
     private Set<TaxBenefitModel> taxBenefit;
+
+
+    // В данном случае Lazy не ставил по такой же причине, что и в EmployeeModel
     @ManyToMany
     @JoinTable(
             joinColumns = @JoinColumn(name = "PayRollCard"),
