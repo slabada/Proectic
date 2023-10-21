@@ -1,4 +1,4 @@
-package com.message.messagemicrosevice.Configurations;
+package com.message.messagemicrosevice.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 @Configuration
-public class MailSenderConfiguration {
+public class MailSenderConfig {
 
     // Поля класса, представляющие настройки отправки почты
     @Value("${spring.mail.host}")
